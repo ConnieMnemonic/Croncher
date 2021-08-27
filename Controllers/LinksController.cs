@@ -51,10 +51,5 @@ namespace Croncher.Controllers
 
             return CreatedAtAction(nameof(GetLink), new { encodedId = convertedId }, convertedId);
         }
-
-        private bool LinkExists(int id)
-        {
-            return _context.Links.Any(e => e.Id == id);
-        }
     }
 }
