@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Croncher.Models;
+using Croncher.Helpers;
 
 namespace Croncher.Controllers
 {
@@ -20,17 +21,12 @@ namespace Croncher.Controllers
             _context = context;
         }
 
-        // GET: api/Links
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Link>>> GetLinks()
-        {
-            return await _context.Links.ToListAsync();
-        }
-
         // GET: api/Links/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Link>> GetLink(int id)
+        [HttpGet("{encodedId}")]
+        public async Task<ActionResult<string>> GetLink(string encodedId)
         {
+            int id = IntBaseConverter.Base62ToBase10(encodedId);
+
             var link = await _context.Links.FindAsync(id);
 
             if (link == null)
@@ -38,65 +34,22 @@ namespace Croncher.Controllers
                 return NotFound();
             }
 
-            return link;
-        }
-
-        // PUT: api/Links/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutLink(int id, Link link)
-        {
-            if (id != link.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(link).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!LinkExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+            return link.Url;
         }
 
         // POST: api/Links
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Link>> PostLink(Link link)
+        [HttpPost("{url}")]
+        public async Task<ActionResult<string>> PostLink(string url)
         {
+            Link link = new Link() { Url = url };
+
             _context.Links.Add(link);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetLink), new { id = link.Id }, link);
-        }
+            var convertedId = IntBaseConverter.Base10ToBase62(link.Id);
 
-        // DELETE: api/Links/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteLink(int id)
-        {
-            var link = await _context.Links.FindAsync(id);
-            if (link == null)
-            {
-                return NotFound();
-            }
-
-            _context.Links.Remove(link);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            return CreatedAtAction(nameof(GetLink), new { encodedId = convertedId }, convertedId);
         }
 
         private bool LinkExists(int id)
