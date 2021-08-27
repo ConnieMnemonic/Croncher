@@ -58,6 +58,9 @@ namespace Croncher
                 endpoints.MapControllerRoute("default", "{controller=Index}/{action=Index}/{encodedId?}");
                 endpoints.MapControllers();
             });
+
+            //Ignore favicon
+            app.Map("/favicon.ico", delegate { });
         }
     }
 }
