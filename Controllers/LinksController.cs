@@ -19,19 +19,6 @@ namespace Croncher.Controllers
             _linksService = linksService;
         }
 
-        [HttpGet("{encodedId}")]
-        public async Task<ActionResult<string>> GetLink(string encodedId)
-        {
-            var link = await _linksService.GetLinkAsync(encodedId);
-
-            if (link == null)
-            {
-                return NotFound();
-            }
-
-            return link;
-        }
-
         public async Task<ActionResult> PostLink()
         {
             var link = await getLinkstringFromRequest(Request);

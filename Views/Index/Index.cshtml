@@ -18,11 +18,14 @@
     <hr />
     <input id="longUrlText" type="text" value="URL" />
     <button id="cronchSubmit" type="button">Cronch!</button>
+    <div id="statusBox"></div>
 
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
         $("#cronchSubmit").click(function () {
             $(function () {
+
+                $("#statusBox").html("Generating your link...");
                 //Send the request for a new short link, returning the resultant encodedId.
                 var longUrl = $("#longUrlText").val();
 
@@ -34,10 +37,15 @@
                         contentType: 'application/json; charset=utf-8',
                         dataType: "json",
                         success: function (data) {
-                            alert(data.encodedId);
+                            var successMessage = "Link generated! ";
+                            var shortUrl = window.location.href.concat(data.encodedId);
+                            var href = "<a href=\"" + shortUrl + "\">" + shortUrl + "</a>";
+                            var finalMessage = successMessage + href;
+
+                            $("#statusBox").html(finalMessage);
                         },
                         error: function () {
-                            alert("ERROR");
+                            $("#statusBox").html("<b>Sorry, something went wrong. Are you sure your URL is correct?")
                         }
                     }
                 )
