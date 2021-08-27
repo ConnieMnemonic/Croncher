@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Croncher.Helpers
 {
-    public class IntBaseConverter
+    public static class IntBaseConverter
     {
         private static readonly string[] BASE_62_ALPHABET = new string[]
         {
@@ -15,7 +12,7 @@ namespace Croncher.Helpers
         };
         private const int BASE_62_RADIX = 62;
 
-        public string Base10ToBase62(int input)
+        public static string Base10ToBase62(int input)
         {
             string result = string.Empty;
             int targetBase = BASE_62_ALPHABET.Length;
@@ -30,7 +27,7 @@ namespace Croncher.Helpers
             return result;
         }
 
-        public int Base62ToBase10(string input)
+        public static int Base62ToBase10(string input)
         {
             int result = 0;
             int multiplier = 1;
