@@ -6,9 +6,43 @@
 
 <html>
 <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
 
 </head>
 <body>
+
+
     <h1>Welcome to Croncher!</h1>
+    <hr />
+    <input id="longUrlText" type="text" value="URL" />
+    <button id="cronchSubmit" type="button">Cronch!</button>
+
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        $("#cronchSubmit").click(function () {
+            $(function () {
+                //Send the request for a new short link, returning the resultant encodedId.
+                var longUrl = $("#longUrlText").val();
+
+                $.ajax(
+                    {
+                        type: "POST",
+                        url: "/api/links",
+                        data: JSON.stringify({ url: longUrl }),
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: "json",
+                        success: function (data) {
+                            alert(data.encodedId);
+                        },
+                        error: function () {
+                            alert("ERROR");
+                        }
+                    }
+                )
+            })
+        });
+    </script>
 </body>
 </html>

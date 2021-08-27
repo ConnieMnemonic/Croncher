@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Croncher.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Croncher.Models;
-using Croncher.Helpers;
-using Croncher.Services;
+using Newtonsoft.Json;
+using System.IO;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Croncher.Controllers
 {
@@ -35,12 +32,26 @@ namespace Croncher.Controllers
             return link;
         }
 
-        [HttpPost("{url}")]
-        public async Task<ActionResult<string>> PostLink(string url)
+        public async Task<ActionResult> PostLink()
         {
-            var encodedId = await _linksService.InsertLinkAsync(url);
+            var link = await getLinkstringFromRequest(Request);
 
-            return CreatedAtAction(nameof(GetLink), new { encodedId = encodedId }, encodedId);
+            var encodedId = await _linksService.InsertLinkAsync(link);
+
+            return Ok(JsonConvert.SerializeObject(new { encodedId = encodedId }));
+        }
+
+        private async Task<string> getLinkstringFromRequest(HttpRequest request)
+        {
+            using (StreamReader reader = new StreamReader(Request.Body, Encoding.UTF8))
+            {
+                var definition = new { url = "" };
+
+                var json = await reader.ReadToEndAsync();
+                var jsonObj = JsonConvert.DeserializeAnonymousType(json, definition);
+
+                return jsonObj.url;
+            }
         }
     }
 }

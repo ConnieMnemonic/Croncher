@@ -33,6 +33,8 @@ namespace Croncher
                 .AddNewtonsoftJson();
             services.AddControllers()
                 .AddNewtonsoftJson();
+            services.AddMvc()
+                .AddNewtonsoftJson();
 
             services.AddDbContext<LinkContext>(opt => opt.UseInMemoryDatabase("Croncher"));
             services.AddScoped<ILinksService, LinksService>();
