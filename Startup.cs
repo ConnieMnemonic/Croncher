@@ -28,15 +28,12 @@ namespace Croncher
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
-            services.AddControllers();
+            services.AddRazorPages()
+                .AddNewtonsoftJson();
+            services.AddControllers()
+                .AddNewtonsoftJson();
 
             services.AddDbContext<LinkContext>(opt => opt.UseInMemoryDatabase("Croncher"));
-
-            //services.AddSwaggerGen(c =>
-            //{
-            //    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Croncher", Version = "v1" });
-            //});
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -45,8 +42,6 @@ namespace Croncher
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                //app.UseSwagger();
-                //app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Croncher v1"));
             }
 
             app.UseHttpsRedirection();
@@ -57,6 +52,8 @@ namespace Croncher
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapRazorPages();
+                endpoints.MapControllerRoute("default", "{controller=Index}/{action=Index}");
                 endpoints.MapControllers();
             });
         }
