@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Croncher.Models;
 using Croncher.Helpers;
+using Croncher.Services;
 
 namespace Croncher.Controllers
 {
@@ -14,42 +15,32 @@ namespace Croncher.Controllers
     [ApiController]
     public class LinksController : ControllerBase
     {
-        private readonly LinkContext _context;
+        private readonly ILinksService _linksService;
 
-        public LinksController(LinkContext context)
+        public LinksController(ILinksService linksService)
         {
-            _context = context;
+            _linksService = linksService;
         }
 
-        // GET: api/Links/5
         [HttpGet("{encodedId}")]
         public async Task<ActionResult<string>> GetLink(string encodedId)
         {
-            int id = IntBaseConverter.Base62ToBase10(encodedId);
-
-            var link = await _context.Links.FindAsync(id);
+            var link = await _linksService.GetLinkAsync(encodedId);
 
             if (link == null)
             {
                 return NotFound();
             }
 
-            return link.Url;
+            return link;
         }
 
-        // POST: api/Links
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost("{url}")]
         public async Task<ActionResult<string>> PostLink(string url)
         {
-            Link link = new Link() { Url = url };
+            var encodedId = await _linksService.InsertLinkAsync(url);
 
-            _context.Links.Add(link);
-            await _context.SaveChangesAsync();
-
-            var convertedId = IntBaseConverter.Base10ToBase62(link.Id);
-
-            return CreatedAtAction(nameof(GetLink), new { encodedId = convertedId }, convertedId);
+            return CreatedAtAction(nameof(GetLink), new { encodedId = encodedId }, encodedId);
         }
     }
 }

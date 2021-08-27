@@ -13,6 +13,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Croncher.Models;
+using Croncher.Services;
 
 namespace Croncher
 {
@@ -34,6 +35,7 @@ namespace Croncher
                 .AddNewtonsoftJson();
 
             services.AddDbContext<LinkContext>(opt => opt.UseInMemoryDatabase("Croncher"));
+            services.AddScoped<ILinksService, LinksService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -53,7 +55,7 @@ namespace Croncher
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
-                endpoints.MapControllerRoute("default", "{controller=Index}/{action=Index}");
+                endpoints.MapControllerRoute("default", "{controller=Index}/{action=Index}/{encodedId?}");
                 endpoints.MapControllers();
             });
         }
